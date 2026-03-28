@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APKSoluciones — Tu equipo listo HOY · Oxapampa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ════════════════════════════════════════
+       TOKENS
+    ════════════════════════════════════════ */
+    :root {
+      --fire:    #FF5C00;
+      --fire-2:  #FF8C42;
+      --lime:    #C8F135;
+      --coal:    #0A0A0A;
+      --coal-2:  #111111;
+      --coal-3:  #1A1A1A;
+      --steel:   #222222;
+      --muted:   #888888;
+      --white:   #F5F0EB;
+      --glow-fire: rgba(255,92,0,0.4);
+      --glow-lime: rgba(200,241,53,0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--coal);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: auto;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--fire);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform .1s, width .2s, height .2s, background .2s;
+      mix-blend-mode: normal;
+      opacity: 0;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(255,92,0,0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: left .12s ease, top .12s ease, width .25s, height .25s, border-color .2s;
+      opacity: 0;
+    }
+    .cursor.hovered { width: 20px; height: 20px; background: var(--lime); }
+    .cursor-ring.hovered { width: 52px; height: 52px; border-color: var(--lime); }
+
+    /* ── NOISE TEXTURE ── */
+    body::after {
+      content:'';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* ════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════ */
+    nav {
+      position: fixed; top:0; left:0; right:0;
+      z-index: 500;
+      padding: .9rem 1.5rem;
+      display: flex; align-items:center; justify-content:space-between;
+      background: rgba(10,10,10,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,92,0,0.15);
+    }
+
+    .nav-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-brand em {
+      font-style: normal;
+      color: var(--fire);
+      text-shadow: 0 0 20px var(--glow-fire);
+    }
+
+    .nav-links {
+      display: none;
+      list-style: none;
+      gap: 2.2rem;
+    }
+    @media(min-width:640px){ .nav-links { display:flex; } }
+    .nav-links a {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--fire); }
+
+    .nav-pill {
+      display: flex; align-items:center; gap:.5rem;
+      background: var(--fire);
+      color: var(--coal);
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .5px;
+      padding: .5rem 1.1rem;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all .25s;
+      box-shadow: 0 0 20px var(--glow-fire);
+    }
+    .nav-pill:hover { background: var(--fire-2); box-shadow: 0 0 40px var(--glow-fire); }
+
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items:center; justify-content:center;
+      padding: 110px 1.5rem 60px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* diagonal stripe accent */
+    #hero::before {
+      content:'';
+      position:absolute;
+      top:-10%; right:-5%;
+      width:55vw; height:130%;
+      background: linear-gradient(160deg, rgba(255,92,0,0.07) 0%, transparent 60%);
+      clip-path: polygon(15% 0,100% 0,100% 100%,0 100%);
+      pointer-events:none;
+    }
+
+    /* scanlines */
+    #hero::after {
+      content:'';
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255,92,0,0.012) 3px,
+        rgba(255,92,0,0.012) 4px
+      );
+      pointer-events:none;
+    }
+
+    .hero-inner {
+      position:relative; z-index:2;
+      max-width: 900px;
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:2.5rem;
+      align-items:center;
+    }
+    @media(min-width:768px){
+      .hero-inner { grid-template-columns: 1fr auto; gap:3rem; }
+    }
+
+    .hero-left {}
+
+    .hero-tag {
+      display: inline-flex; align-items:center; gap:.5rem;
+      font-size:.7rem; font-weight:700; letter-spacing:2.5px;
+      text-transform:uppercase;
+      color: var(--fire);
+      margin-bottom:1.2rem;
+    }
+    .hero-tag::before {
+      content:'';
+      display:inline-block;
+      width:22px; height:2px;
+      background: var(--fire);
+    }
+
+    h1.hero-h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 12vw, 7.5rem);
+      line-height: .93;
+      letter-spacing: 2px;
+      margin-bottom: 1.4rem;
+    }
+    h1.hero-h1 .line-orange { color: var(--fire); text-shadow: 0 0 40px var(--glow-fire); }
+    h1.hero-h1 .line-lime   { color: var(--lime); }
+
+    .hero-desc {
+      font-size: clamp(.95rem, 2vw, 1.1rem);
+      color: #aaa;
+      line-height: 1.75;
+      max-width: 460px;
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+    .hero-desc strong { color: var(--white); font-weight: 600; }
+
+    .hero-ctas {
+      display:flex; flex-wrap:wrap; gap:.85rem;
+    }
+
+    .btn-fire {
+      display:inline-flex; align-items:center; gap:.6rem;
+      background: var(--fire);
+      color: var(--coal);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing:2px;
+      padding: .9rem 2rem;
+      border-radius: 6px;
+      text-decoration:none;
+      transition: all .25s;
+      box-shadow: 0 0 30px var(--glow-fire);
+    }
+    .btn-fire:hover { background:var(--fire-2); box-shadow: 0 0 60px var(--glow-fire); transform:translateY(-3px); }
+
+    .btn-outline {
+      display:inline-flex; align-items:center; gap:.6rem;
+      background: transparent;
+      color: var(--white);
+      font-size:.88rem; font-weight:600;
+      padding: .9rem 1.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      text-decoration:none;
+      transition: all .25s;
+    }
+    .btn-outline:hover { border-color:var(--fire); color:var(--fire); }
+
+    /* hero logo card */
+    .hero-logo-card {
+      flex-shrink:0;
+      width:200px;
+      background: var(--coal-3);
+      border: 1px solid rgba(255,92,0,0.25);
+      border-radius:20px;
+      padding: 1.5rem;
+      display:flex; flex-direction:column; align-items:center;
+      gap:1rem;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(255,92,0,0.1);
+      animation: cardFloat 5s ease-in-out infinite;
+    }
+    @keyframes cardFloat {
+      0%,100%{ transform:translateY(0) rotate(1deg); }
+      50%    { transform:translateY(-12px) rotate(-1deg); }
+    }
+    .hero-logo-card img {
+      width:120px; height:120px; object-fit:contain;
+      filter: drop-shadow(0 0 20px rgba(255,92,0,0.4));
+    }
+    .hero-logo-placeholder {
+      width:120px; height:120px;
+      border-radius:14px;
+      background:rgba(255,92,0,0.07);
+      border:2px dashed rgba(255,92,0,0.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.65rem; color:var(--muted); text-align:center;
+    }
+    .badge-live {
+      display:flex; align-items:center; gap:.4rem;
+      font-size:.7rem; font-weight:700; letter-spacing:1px;
+      color: var(--lime);
+      text-transform:uppercase;
+    }
+    .badge-live .dot {
+      width:7px; height:7px; border-radius:50%;
+      background:var(--lime);
+      box-shadow: 0 0 10px var(--glow-lime);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:.2; } }
+
+    /* ── TRUST BAR ── */
+    .trust-bar {
+      position:relative; z-index:1;
+      background: var(--coal-2);
+      border-top: 1px solid rgba(255,92,0,0.12);
+      border-bottom: 1px solid rgba(255,92,0,0.12);
+      padding: 1.4rem 1.5rem;
+      overflow:hidden;
+    }
+
+    .trust-track {
+      display:flex;
+      gap:3.5rem;
+      animation: scrollLeft 20s linear infinite;
+      width: max-content;
+    }
+    @keyframes scrollLeft {
+      from { transform:translateX(0); }
+      to   { transform:translateX(-50%); }
+    }
+    .trust-item {
+      display:flex; align-items:center; gap:.6rem;
+      white-space:nowrap;
+      font-size:.8rem; font-weight:600; letter-spacing:.5px;
+      color: var(--muted);
+      text-transform:uppercase;
+    }
+    .trust-item .dot { width:4px; height:4px; border-radius:50%; background:var(--fire); }
+
+    /* ════════════════════════════════════════
+       PAIN SECTION — psicología
+    ════════════════════════════════════════ */
+    #dolor {
+      padding: 90px 1.5rem;
+      background: var(--coal-2);
+      position:relative; z-index:1;
+    }
+
+    .pain-wrap {
+      max-width:1000px; margin:0 auto;
+    }
+
+    .pain-label {
+      font-size:.72rem; font-weight:700; letter-spacing:3px;
+      text-transform:uppercase; color:var(--fire);
+      margin-bottom:.8rem;
+    }
+
+    .pain-headline {
+      font-family:'Bebas Neue', sans-serif;
+      font-size: clamp(2rem,6vw,3.8rem);
+      line-height:1;
+      letter-spacing:1px;
+      margin-bottom:3rem;
+    }
+    .pain-headline span { color:var(--fire); }
+
+    .pain-grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:1px;
+      background: rgba(255,92,0,0.1);
+      border: 1px solid rgba(255,92,0,0.12);
+      border-radius:16px;
+      overflow:hidden;
+    }
+    @media(min-width:640px){ .pain-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(min-width:900px){ .pain-grid { grid-template-columns: repeat(3,1fr); } }
+
+    .pain-item {
+      background: var(--coal-2);
+      padding:1.8rem;
+      transition: background .3s;
+      position:relative;
+      overflow:hidden;
+    }
+    .pain-item::after {
+      content:'';
+      position:absolute; bottom:0; left:0;
+      width:0; height:2px;
+      background:var(--fire);
+      transition: width .4s ease;
+    }
+    .pain-item:hover::after { width:100%; }
+    .pain-item:hover { background: rgba(255,92,0,0.05); }
+
+    .pain-emoji { font-size:1.8rem; margin-bottom:.7rem; }
+    .pain-q {
+      font-weight:700; font-size:.97rem; margin-bottom:.4rem;
+      color:var(--white);
+    }
+    .pain-a {
+      font-size:.82rem; color:var(--muted); line-height:1.6;
+    }
+    .pain-a strong { color:var(--fire); font-weight:700; }
+
+    /* ════════════════════════════════════════
+       COUNTER STRIP
+    ════════════════════════════════════════ */
+    .counter-strip {
+      background: var(--fire);
+      padding: 2.5rem 1.5rem;
+      position:relative; z-index:1;
+    }
+    .counter-grid {
+      max-width:900px; margin:0 auto;
+      display:flex; flex-wrap:wrap;
+      justify-content:center; gap:2.5rem;
+    }
+    .counter-item { text-align:center; }
+    .counter-num {
+      font-family:'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem,8vw,4.5rem);
+      color: var(--coal);
+      letter-spacing:1px;
+      line-height:1;
+    }
+    .counter-label {
+      font-size:.75rem; font-weight:700;
+      letter-spacing:2px; text-transform:uppercase;
+      color: rgba(10,10,10,0.65);
+      margin-top:.2rem;
+    }
+
+    /* ════════════════════════════════════════
+       SERVICIOS
+    ════════════════════════════════════════ */
+    #servicios {
+      padding: 100px 1.5rem;
+      background: var(--coal);
+      position:relative; z-index:1;
+    }
+
+    .sec-eyebrow {
+      font-size:.7rem; font-weight:700; letter-spacing:3px;
+      text-transform:uppercase; color:var(--fire);
+      margin-bottom:.6rem;
+    }
+    .sec-title {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:clamp(2.4rem,7vw,4rem);
+      letter-spacing:2px; line-height:1;
+      margin-bottom:.8rem;
+    }
+    .sec-sub {
+      font-size:.95rem; color:var(--muted);
+      max-width:480px; line-height:1.7;
+      margin-bottom:3rem;
+      font-weight:300;
+    }
+
+    .svc-grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:1.5rem;
+      max-width:1100px; margin:0 auto;
+    }
+    @media(min-width:560px){ .svc-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(min-width:900px){ .svc-grid { grid-template-columns:repeat(3,1fr); } }
+
+    .svc-card {
+      background: var(--coal-3);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:14px;
+      padding:2rem;
+      transition: all .3s;
+      position:relative;
+      overflow:hidden;
+      cursor:default;
+    }
+    .svc-card::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0;
+      height:2px;
+      background: linear-gradient(90deg, var(--fire), var(--fire-2));
+      transform:scaleX(0);
+      transform-origin:left;
+      transition: transform .4s ease;
+    }
+    .svc-card:hover { border-color:rgba(255,92,0,0.3); transform:translateY(-5px); box-shadow:0 30px 60px rgba(0,0,0,0.5), 0 0 30px rgba(255,92,0,0.08); }
+    .svc-card:hover::before { transform:scaleX(1); }
+
+    .svc-num {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:3.5rem; letter-spacing:1px;
+      color:rgba(255,92,0,0.1);
+      line-height:1;
+      margin-bottom:-.5rem;
+      transition: color .3s;
+    }
+    .svc-card:hover .svc-num { color:rgba(255,92,0,0.2); }
+
+    .svc-icon {
+      font-size:1.8rem;
+      margin-bottom:.8rem;
+    }
+    .svc-name {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.4rem; letter-spacing:1px;
+      margin-bottom:.6rem;
+      color:var(--white);
+    }
+    .svc-desc {
+      font-size:.83rem; color:var(--muted); line-height:1.65;
+      font-weight:300;
+    }
+    .svc-tags {
+      display:flex; flex-wrap:wrap; gap:.35rem;
+      margin-top:1.1rem;
+    }
+    .svc-tag {
+      font-size:.65rem; font-weight:700; letter-spacing:.5px;
+      padding:.25rem .6rem;
+      background: rgba(255,92,0,0.08);
+      border: 1px solid rgba(255,92,0,0.2);
+      border-radius:4px;
+      color:var(--fire-2);
+      text-transform:uppercase;
+    }
+
+    /* ════════════════════════════════════════
+       PROCESO — urgencia
+    ════════════════════════════════════════ */
+    #proceso {
+      padding: 90px 1.5rem;
+      background: var(--coal-2);
+      position:relative; z-index:1;
+    }
+
+    .process-steps {
+      max-width:800px; margin:2rem auto 0;
+      display:flex; flex-direction:column; gap:0;
+      position:relative;
+    }
+    .process-steps::before {
+      content:'';
+      position:absolute;
+      left:28px; top:30px; bottom:30px;
+      width:2px;
+      background: linear-gradient(to bottom, var(--fire), var(--fire-2), rgba(255,92,0,0));
+    }
+
+    .step {
+      display:flex; align-items:flex-start; gap:1.5rem;
+      padding: 1.5rem 0;
+    }
+    .step-bubble {
+      flex-shrink:0;
+      width:58px; height:58px;
+      background: var(--coal-3);
+      border:2px solid var(--fire);
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.4rem; color:var(--fire);
+      box-shadow: 0 0 20px rgba(255,92,0,0.3);
+      position:relative; z-index:2;
+    }
+    .step-body { padding-top:.5rem; }
+    .step-title {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.2rem; letter-spacing:1px;
+      margin-bottom:.3rem;
+    }
+    .step-desc { font-size:.85rem; color:var(--muted); line-height:1.6; font-weight:300; }
+    .step-time {
+      display:inline-block;
+      margin-top:.5rem;
+      font-size:.7rem; font-weight:700; letter-spacing:1px;
+      text-transform:uppercase;
+      color:var(--lime);
+      background:rgba(200,241,53,0.1);
+      border:1px solid rgba(200,241,53,0.2);
+      padding:.2rem .6rem; border-radius:4px;
+    }
+
+    /* ════════════════════════════════════════
+       CTA INTERMEDIO
+    ════════════════════════════════════════ */
+    .mid-cta {
+      background: linear-gradient(135deg, #1a0a00, #0f0f0f);
+      border-top:1px solid rgba(255,92,0,0.2);
+      border-bottom:1px solid rgba(255,92,0,0.2);
+      padding:60px 1.5rem;
+      text-align:center;
+      position:relative; z-index:1;
+      overflow:hidden;
+    }
+    .mid-cta::before {
+      content:'';
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(255,92,0,0.15) 0%, transparent 60%);
+      pointer-events:none;
+    }
+    .mid-cta h2 {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:clamp(2rem,6vw,3.5rem);
+      letter-spacing:2px; line-height:1;
+      margin-bottom:.8rem;
+    }
+    .mid-cta h2 span { color:var(--fire); }
+    .mid-cta p {
+      font-size:.95rem; color:var(--muted);
+      margin-bottom:2rem; font-weight:300;
+    }
+    .btn-lime {
+      display:inline-flex; align-items:center; gap:.6rem;
+      background: var(--lime);
+      color: var(--coal);
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.1rem; letter-spacing:2px;
+      padding:1rem 2.2rem; border-radius:6px;
+      text-decoration:none;
+      transition:all .25s;
+      box-shadow: 0 0 30px var(--glow-lime);
+    }
+    .btn-lime:hover { transform:translateY(-3px); box-shadow:0 0 60px var(--glow-lime); }
+
+    /* ════════════════════════════════════════
+       CONTACTO + MAPA
+    ════════════════════════════════════════ */
+    #contacto {
+      padding:100px 1.5rem;
+      background: var(--coal);
+      position:relative; z-index:1;
+    }
+
+    .contact-grid {
+      max-width:1000px; margin:0 auto;
+      display:grid; grid-template-columns:1fr;
+      gap:3rem;
+    }
+    @media(min-width:768px){ .contact-grid { grid-template-columns:1fr 1fr; } }
+
+    .contact-left h2 {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:clamp(2rem,5vw,3rem);
+      letter-spacing:1px; line-height:1.05;
+      margin-bottom:1rem;
+    }
+    .contact-left h2 span { color:var(--fire); }
+
+    .contact-left p {
+      font-size:.9rem; color:var(--muted); line-height:1.7;
+      margin-bottom:2rem; font-weight:300;
+      max-width:380px;
+    }
+
+    .info-rows { display:flex; flex-direction:column; gap:.9rem; margin-bottom:2rem; }
+    .info-row {
+      display:flex; align-items:center; gap:.8rem;
+      font-size:.88rem; color:#bbb;
+    }
+    .info-icon {
+      width:36px; height:36px;
+      background: rgba(255,92,0,0.1);
+      border:1px solid rgba(255,92,0,0.2);
+      border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; flex-shrink:0;
+    }
+
+    .btn-wa-big {
+      display:flex; align-items:center; justify-content:center; gap:.7rem;
+      background: #25D366;
+      color: #fff;
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.15rem; letter-spacing:2px;
+      padding:1.1rem 2rem;
+      border-radius:10px;
+      text-decoration:none;
+      transition:all .3s;
+      box-shadow: 0 0 35px rgba(37,211,102,0.3);
+      width:100%;
+    }
+    .btn-wa-big:hover { background:#1fb858; box-shadow:0 0 60px rgba(37,211,102,0.5); transform:translateY(-3px); }
+
+    .map-box {
+      border-radius:16px; overflow:hidden;
+      border:1px solid rgba(255,92,0,0.2);
+      height:380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .map-box iframe {
+      width:100%; height:100%; border:none;
+      filter: invert(90%) hue-rotate(180deg) saturate(0.9);
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      background: var(--coal-2);
+      border-top:1px solid rgba(255,255,255,0.06);
+      padding: 2.5rem 1.5rem;
+      display:flex; flex-wrap:wrap;
+      align-items:center; justify-content:space-between;
+      gap:1rem;
+    }
+    .foot-brand {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.5rem; letter-spacing:2px;
+      color:var(--white);
+    }
+    .foot-brand em { font-style:normal; color:var(--fire); }
+    footer p { font-size:.75rem; color:var(--muted); }
+    .foot-right { font-size:.75rem; color:var(--muted); text-align:right; }
+
+    /* ════════════════════════════════════════
+       WHATSAPP FLOAT
+    ════════════════════════════════════════ */
+    .wa-fab {
+      position:fixed; bottom:1.5rem; right:1.5rem;
+      z-index:600;
+      display:flex; align-items:center; gap:.6rem;
+      background:#25D366;
+      color:#fff;
+      font-family:'Bebas Neue', sans-serif;
+      font-size:.85rem; letter-spacing:1.5px;
+      padding:.75rem 1.2rem;
+      border-radius:100px;
+      text-decoration:none;
+      box-shadow: 0 8px 30px rgba(37,211,102,0.45);
+      transition:all .3s;
+      animation: fabPulse 3s ease-in-out infinite;
+    }
+    .wa-fab:hover { transform:scale(1.06) translateY(-2px); box-shadow:0 12px 40px rgba(37,211,102,0.65); }
+    @keyframes fabPulse {
+      0%,100%{ box-shadow:0 8px 30px rgba(37,211,102,0.45); }
+      50%    { box-shadow:0 8px 50px rgba(37,211,102,0.75); }
+    }
+
+    /* ════════════════════════════════════════
+       SCROLL ANIMATIONS
+    ════════════════════════════════════════ */
+    /* All elements visible - CSS keyframe animations instead of JS observer */
+    .reveal {
+      opacity:1;
+      transform:none;
+      animation: fadeUp .7s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ════════════════════════════════════════
+       SELECTION COLOR
+    ════════════════════════════════════════ */
+    ::selection { background:var(--fire); color:var(--coal); }
+  </style>
+</head>
+<body>
+
+<!-- Cursors -->
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#hero" class="nav-brand">APK<em>Soluciones</em></a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="https://wa.me/51977559944" target="_blank" class="nav-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Escríbenos YA
+  </a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">Oxapampa, Pasco · Perú</div>
+      <h1 class="hero-h1">
+        <span class="line-orange">Tu equipo</span><br/>
+        ROTO<br/>
+        <span class="line-lime">¿Hoy listo?</span>
+      </h1>
+      <p class="hero-desc">
+        <strong>Diagnóstico en minutos. Solución el mismo día.</strong><br/>
+        En APKSoluciones somos el técnico de confianza que Oxapampa necesitaba: rápidos, honestos y sin cobros sorpresa.
+      </p>
+      <div class="hero-ctas">
+        <a href="https://wa.me/51977559944" target="_blank" class="btn-fire">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          QUIERO AYUDA AHORA
+        </a>
+        <a href="#servicios" class="btn-outline">Ver servicios ↓</a>
+      </div>
+    </div>
+
+    <div class="hero-logo-card">
+      <img src="logo.png" alt="APKSoluciones"
+           onerror="this.style.display='none';document.getElementById('lp').style.display='flex'"/>
+      <div id="lp" class="hero-logo-placeholder" style="display:none">logo.png</div>
+      <div class="badge-live">
+        <span class="dot"></span>
+        Atendiendo
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRUST TICKER ═══ -->
+<div class="trust-bar">
+  <div class="trust-track">
+    <span class="trust-item"><span class="dot"></span> Hardware y pantallas</span>
+    <span class="trust-item"><span class="dot"></span> Formateo express</span>
+    <span class="trust-item"><span class="dot"></span> Mantenimiento preventivo</span>
+    <span class="trust-item"><span class="dot"></span> Instalación de SSD / RAM</span>
+    <span class="trust-item"><span class="dot"></span> Descarga de contenido</span>
+    <span class="trust-item"><span class="dot"></span> Entrega el mismo día</span>
+    <span class="trust-item"><span class="dot"></span> Sin cobros ocultos</span>
+    <span class="trust-item"><span class="dot"></span> Técnico local de confianza</span>
+    <!-- duplicate for seamless loop -->
+    <span class="trust-item"><span class="dot"></span> Hardware y pantallas</span>
+    <span class="trust-item"><span class="dot"></span> Formateo express</span>
+    <span class="trust-item"><span class="dot"></span> Mantenimiento preventivo</span>
+    <span class="trust-item"><span class="dot"></span> Instalación de SSD / RAM</span>
+    <span class="trust-item"><span class="dot"></span> Descarga de contenido</span>
+    <span class="trust-item"><span class="dot"></span> Entrega el mismo día</span>
+    <span class="trust-item"><span class="dot"></span> Sin cobros ocultos</span>
+    <span class="trust-item"><span class="dot"></span> Técnico local de confianza</span>
+  </div>
+</div>
+
+<!-- ═══ PAIN SECTION ═══ -->
+<section id="dolor">
+  <div class="pain-wrap">
+    <div class="pain-label reveal">— ¿Te suena familiar? —</div>
+    <h2 class="pain-headline reveal">
+      Sabemos exactamente<br/><span>cómo te sientes</span>
+    </h2>
+    <div class="pain-grid">
+      <div class="pain-item reveal">
+        <div class="pain-emoji">💻</div>
+        <div class="pain-q">"Mi laptop se apagó y no enciende"</div>
+        <div class="pain-a">En la mayoría de casos es un fallo de batería o tarjeta madre. Lo diagnosticamos <strong>gratis</strong> en minutos.</div>
+      </div>
+      <div class="pain-item reveal">
+        <div class="pain-emoji">🐢</div>
+        <div class="pain-q">"Va lentísimo, tarda siglos en arrancar"</div>
+        <div class="pain-a">Un formateo limpio + SSD cambia todo. <strong>Lo dejamos como nuevo el mismo día.</strong></div>
+      </div>
+      <div class="pain-item reveal">
+        <div class="pain-emoji">🦠</div>
+        <div class="pain-q">"Creo que tiene virus, sale publicidad rara"</div>
+        <div class="pain-a">Eliminamos todo el malware y te instalamos <strong>antivirus profesional</strong> para que no vuelva a pasar.</div>
+      </div>
+      <div class="pain-item reveal">
+        <div class="pain-emoji">📱</div>
+        <div class="pain-q">"Quiero pasar mis fotos a un disco o USB"</div>
+        <div class="pain-a">Transferimos todos tus archivos de forma <strong>segura y sin pérdida de datos</strong>. Tú traes el equipo, nosotros hacemos el resto.</div>
+      </div>
+      <div class="pain-item reveal">
+        <div class="pain-emoji">🖥️</div>
+        <div class="pain-q">"La pantalla tiene rayas / se rompio"</div>
+        <div class="pain-a">Cambiamos pantallas y teclados con <strong>repuestos de calidad</strong> y garantía en el trabajo.</div>
+      </div>
+      <div class="pain-item reveal">
+        <div class="pain-emoji">🎬</div>
+        <div class="pain-q">"¿Puedes bajarme películas y música?"</div>
+        <div class="pain-a">Nuestro Centro de Descargas te llena el USB o disco con lo que quieras. <strong>Rápido y a buen precio.</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COUNTER ═══ -->
+<div class="counter-strip">
+  <div class="counter-grid">
+    <div class="counter-item">
+      <div class="counter-num" data-target="500">560</div>
+      <div class="counter-label">Equipos reparados</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" data-target="98">98</div>
+      <div class="counter-label">% Satisfacción</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" data-target="24">5</div>
+      <div class="counter-label">Horas máx. entrega</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" data-target="5">10</div>
+      <div class="counter-label">Años de experiencia</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SERVICIOS ═══ -->
+<section id="servicios">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="sec-eyebrow reveal">— Lo que hacemos —</div>
+    <h2 class="sec-title reveal">Nuestros<br/>6 pilares</h2>
+    <p class="sec-sub reveal">Soluciones completas para que tu equipo rinda al 100%.</p>
+
+    <div class="svc-grid">
+
+      <div class="svc-card reveal">
+        <div class="svc-num">01</div>
+        <div class="svc-icon">🔧</div>
+        <div class="svc-name">Reparación & Soporte Pro</div>
+        <div class="svc-desc">Hardware, pantallas, teclados y diagnóstico preciso. Identificamos el problema y lo solucionamos sin rodeos.</div>
+        <div class="svc-tags"><span class="svc-tag">Hardware</span><span class="svc-tag">Pantallas</span><span class="svc-tag">Diagnóstico</span></div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-num">02</div>
+        <div class="svc-icon">💿</div>
+        <div class="svc-name">Formateo & Instalación</div>
+        <div class="svc-desc">Windows, Office, antivirus y software especializado. Tu sistema limpio, activado y seguro en horas.</div>
+        <div class="svc-tags"><span class="svc-tag">Windows</span><span class="svc-tag">Office</span><span class="svc-tag">Antivirus</span></div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-num">03</div>
+        <div class="svc-icon">🌬️</div>
+        <div class="svc-name">Mantenimiento Preventivo</div>
+        <div class="svc-desc">Limpieza interna profunda, cambio de pasta térmica y optimización. Prevenir es más barato que reparar.</div>
+        <div class="svc-tags"><span class="svc-tag">Limpieza</span><span class="svc-tag">Pasta térmica</span><span class="svc-tag">Optimización</span></div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-num">04</div>
+        <div class="svc-icon">⬇️</div>
+        <div class="svc-name">Centro de Descargas</div>
+        <div class="svc-desc">Música, películas, series y contenido para tu USB o disco. Trae tu dispositivo y te lo llenamos al instante.</div>
+        <div class="svc-tags"><span class="svc-tag">Música</span><span class="svc-tag">Películas</span><span class="svc-tag">Series</span></div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-num">05</div>
+        <div class="svc-icon">⚡</div>
+        <div class="svc-name">Soluciones Rápidas</div>
+        <div class="svc-desc">Soporte inmediato para urgencias. Nuestro compromiso: tu equipo listo y funcionando hoy mismo, sin excusas.</div>
+        <div class="svc-tags"><span class="svc-tag">Express</span><span class="svc-tag">Mismo día</span><span class="svc-tag">Urgencias</span></div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-num">06</div>
+        <div class="svc-icon">💾</div>
+        <div class="svc-name">Migración de Datos</div>
+        <div class="svc-desc">Instalamos SSD y RAM para que vuele. Transferencia 100% segura de todos tus archivos sin perder ni uno.</div>
+        <div class="svc-tags"><span class="svc-tag">SSD</span><span class="svc-tag">RAM</span><span class="svc-tag">Transferencia</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROCESO ═══ -->
+<section id="proceso">
+  <div style="max-width:800px;margin:0 auto;">
+    <div class="sec-eyebrow reveal">— Así de fácil —</div>
+    <h2 class="sec-title reveal">Tu equipo listo<br/>en 4 pasos</h2>
+
+    <div class="process-steps">
+      <div class="step reveal">
+        <div class="step-bubble">1</div>
+        <div class="step-body">
+          <div class="step-title">Escríbenos o llega al local</div>
+          <div class="step-desc">Mándanos un WhatsApp con la falla o trae tu equipo directo a Jr. Grau 129, Oxapampa.</div>
+          <span class="step-time">⏱ 2 minutos</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-bubble">2</div>
+        <div class="step-body">
+          <div class="step-title">Diagnóstico sin costo</div>
+          <div class="step-desc">Revisamos tu equipo y te decimos exactamente qué tiene. Sin cobrar nada por revisar, sin sorpresas.</div>
+          <span class="step-time">⏱ 15-30 min</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-bubble">3</div>
+        <div class="step-body">
+          <div class="step-title">Apruebas el presupuesto</div>
+          <div class="step-desc">Te damos el precio justo y honesto. Solo procedemos si estás de acuerdo. Tú tienes el control.</div>
+          <span class="step-time">⏱ Tú decides</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-bubble">4</div>
+        <div class="step-body">
+          <div class="step-title">Equipo entregado el mismo día</div>
+          <div class="step-desc">La mayoría de reparaciones se resuelven el mismo día. Te avisamos por WhatsApp cuando esté listo.</div>
+          <span class="step-time">✅ Mismo día</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MID CTA ═══ -->
+<div class="mid-cta">
+  <h2 class="reveal">¿Sigues esperando?<br/><span>Cada hora importa.</span></h2>
+  <p class="reveal">Tu equipo puede estar listo hoy. Solo necesitas dar el primer paso.</p>
+  <a href="https://wa.me/51977559944" target="_blank" class="btn-lime reveal">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    ESCRIBIR AHORA — ES GRATIS
+  </a>
+</div>
+
+<!-- ═══ CONTACTO ═══ -->
+<section id="contacto">
+  <div style="max-width:1000px;margin:0 auto;">
+    <div class="sec-eyebrow reveal">— Encuéntranos —</div>
+    <div class="contact-grid">
+
+      <div class="contact-left reveal">
+        <h2>Estamos en el <span>corazón</span> de Oxapampa</h2>
+        <p>A pasos del centro. Sin citas. Sin esperas largas. Llega directamente o escríbenos y coordinamos.</p>
+
+        <div class="info-rows">
+          <div class="info-row">
+            <div class="info-icon">📍</div>
+            <span>Jr. Grau N° 129, Oxapampa, Pasco, Perú</span>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">📞</div>
+            <span>977 559 944</span>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">🕐</div>
+            <span>Lun – Sáb: 8:00 am – 8:00 pm</span>
+          </div>
+        </div>
+
+        <a href="https://wa.me/51977559944" target="_blank" class="btn-wa-big">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          HABLAR CON UN TÉCNICO
+        </a>
+      </div>
+
+      <div class="map-box reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.0!2d-75.394!3d-10.576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9109c116bf04e429%3A0x9e2485ad5d8fee61!2sJr.+Grau+129%2C+Oxapampa!5e0!3m2!1ses!2spe!4v1"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación APKSoluciones">
+        </iframe>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>
+    <div class="foot-brand">APK<em>Soluciones</em></div>
+    <p>© 2025 · Jr. Grau N° 129, Oxapampa, Pasco, Perú</p>
+  </div>
+  <div class="foot-right">
+    <p>977 559 944</p>
+    <p style="margin-top:.2rem;">Hecho con ❤️ en Oxapampa</p>
+  </div>
+</footer>
+
+<!-- ═══ WHATSAPP FAB ═══ -->
+<a href="https://wa.me/51977559944" target="_blank" class="wa-fab">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  WhatsApp
+</a>
+
+<!-- ═══ SCRIPTS ═══ */
+<script>
+  /* ── Custom cursor (activates on first real mouse move) ── */
+  const cur  = document.getElementById('cur');
+  const ring = document.getElementById('ring');
+  let mx=0, my=0, rx=0, ry=0;
+  let cursorActive = false;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left  = mx + 'px';
+    cur.style.top   = my + 'px';
+
+    if (!cursorActive) {
+      cursorActive = true;
+      // Hide native cursor and show custom one
+      document.body.style.cursor = 'none';
+      cur.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }
+  });
+
+  function animRing(){
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button, .svc-card, .pain-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.classList.add('hovered'); ring.classList.add('hovered'); });
+    el.addEventListener('mouseleave', () => { cur.classList.remove('hovered'); ring.classList.remove('hovered'); });
+  });
+
+  /* Elements visible immediately via CSS animations */
+
+  /* ── Counter animation - runs on page load ── */
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const label = el.nextElementSibling.textContent;
+    const dur = 1800, step = 16;
+    const inc = target / (dur / step);
+    let current = 0;
+    const timer = setInterval(() => {
+      current = Math.min(current + inc, target);
+      const val = Math.floor(current);
+      if (label.includes('%')) el.textContent = val + '%';
+      else if (label.includes('Horas')) el.textContent = val + 'h';
+      else el.textContent = '+' + val;
+      if (current >= target) {
+        if (label.includes('%')) el.textContent = target + '%';
+        else if (label.includes('Horas')) el.textContent = target + 'h';
+        else el.textContent = '+' + target;
+        clearInterval(timer);
+      }
+    }, step);
+  }
+  // Start counters after short delay so user sees the animation
+  setTimeout(() => {
+    document.querySelectorAll('.counter-num').forEach(animateCounter);
+  }, 400);
+</script>
+</body>
+</html>
